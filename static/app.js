@@ -114,6 +114,13 @@ function renderChips() {
   }
 }
 
+function handleImageError(img) {
+  const fallback = document.createElement("div");
+  fallback.className = "card-image--fallback";
+  fallback.style.setProperty("--ping-delay", img.dataset.pingDelay || "0s");
+  img.replaceWith(fallback);
+}
+
 function cardHtml(item) {
   const isNew = state.lastVisit && item.first_seen_at > state.lastVisit;
   const badges = [];
@@ -133,16 +140,26 @@ function cardHtml(item) {
     </div>`;
   }
 
+  // Stagger the fallback corner-ping per card so a grid of no-image items
+  // doesn't pulse in visual unison.
+  const pingDelay = `${(item.id % 5) * 0.3}s`;
+  const imageBand = item.image
+    ? `<img class="card-image" src="${escapeHtml(item.image)}" alt="" loading="lazy" data-ping-delay="${pingDelay}" onerror="handleImageError(this)">`
+    : `<div class="card-image--fallback" style="--ping-delay:${pingDelay}"></div>`;
+
   return `
     <article class="card ${item.read ? "is-read" : ""}" data-id="${item.id}">
-      <a href="${item.url}" target="_blank" rel="noopener" class="card-title text-[0.95rem]">${escapeHtml(item.title)}</a>
-      <p class="text-sm text-zinc-400 leading-relaxed line-clamp-3">${escapeHtml(item.gist || "")}</p>
-      ${repoMeta}
-      <div class="mt-auto pt-2 flex items-center justify-between">
-        <span class="source-badge"><span class="source-dot"></span>${escapeHtml(item.source || "")}</span>
-        <div class="flex items-center gap-2">
-          ${badges.join("")}
-          <span class="meta-mono text-xs text-zinc-500">${relativeTime(item.published_at || item.first_seen_at)}</span>
+      ${imageBand}
+      <div class="card-body">
+        <a href="${item.url}" target="_blank" rel="noopener" class="card-title text-[0.95rem]">${escapeHtml(item.title)}</a>
+        <p class="text-sm text-zinc-400 leading-relaxed line-clamp-3">${escapeHtml(item.gist || "")}</p>
+        ${repoMeta}
+        <div class="mt-auto pt-2 flex items-center justify-between">
+          <span class="source-badge"><span class="source-dot"></span>${escapeHtml(item.source || "")}</span>
+          <div class="flex items-center gap-2">
+            ${badges.join("")}
+            <span class="meta-mono text-xs text-zinc-500">${relativeTime(item.published_at || item.first_seen_at)}</span>
+          </div>
         </div>
       </div>
     </article>

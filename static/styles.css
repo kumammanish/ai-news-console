@@ -37,10 +37,10 @@ html, body {
   z-index: -1;
   pointer-events: none;
   background:
-    radial-gradient(ellipse 900px 640px at 6% -8%, color-mix(in srgb, var(--hue-news) 26%, transparent), transparent 60%),
-    radial-gradient(ellipse 900px 640px at 96% -4%, color-mix(in srgb, var(--hue-microsoft) 22%, transparent), transparent 60%),
-    radial-gradient(ellipse 800px 640px at -4% 102%, color-mix(in srgb, var(--hue-usecases) 18%, transparent), transparent 60%),
-    radial-gradient(ellipse 900px 640px at 102% 104%, color-mix(in srgb, var(--hue-repos) 18%, transparent), transparent 60%),
+    radial-gradient(ellipse 900px 640px at 6% -8%, color-mix(in srgb, var(--hue-news) 40%, transparent), transparent 60%),
+    radial-gradient(ellipse 900px 640px at 96% -4%, color-mix(in srgb, var(--hue-microsoft) 34%, transparent), transparent 60%),
+    radial-gradient(ellipse 800px 640px at -4% 102%, color-mix(in srgb, var(--hue-usecases) 28%, transparent), transparent 60%),
+    radial-gradient(ellipse 900px 640px at 102% 104%, color-mix(in srgb, var(--hue-repos) 28%, transparent), transparent 60%),
     var(--bg-base);
 }
 /* Whisper-thin CRT scanline texture — reinforces the "monitoring console"
@@ -49,7 +49,7 @@ html, body {
   content: "";
   position: absolute;
   inset: 0;
-  opacity: 0.4;
+  opacity: 0.5;
   background-image: repeating-linear-gradient(
     to bottom,
     rgba(255, 255, 255, 0.05) 0px,
@@ -65,7 +65,7 @@ html, body {
   content: "";
   position: absolute;
   inset: 0;
-  opacity: 0.6;
+  opacity: 0.75;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cpath d='M0 26H34V0M120 74H86V120M60 0V46H120M0 94H26V64H74V94H120' fill='none' stroke='rgba(255,255,255,0.05)' stroke-width='1'/%3E%3Ccircle cx='34' cy='26' r='1.5' fill='rgba(255,255,255,0.09)'/%3E%3Ccircle cx='86' cy='74' r='1.5' fill='rgba(255,255,255,0.09)'/%3E%3Ccircle cx='60' cy='46' r='1.5' fill='rgba(255,255,255,0.09)'/%3E%3Ccircle cx='26' cy='64' r='1.5' fill='rgba(255,255,255,0.09)'/%3E%3Ccircle cx='74' cy='94' r='1.5' fill='rgba(255,255,255,0.09)'/%3E%3C/svg%3E");
   background-size: 120px 120px;
 }
@@ -81,17 +81,40 @@ html, body {
   background: conic-gradient(
     from 0deg,
     transparent 0deg,
-    color-mix(in srgb, var(--accent) 16%, transparent) 6deg,
-    transparent 22deg,
+    color-mix(in srgb, var(--accent) 22%, transparent) 6deg,
+    transparent 26deg,
     transparent 360deg
   );
   mix-blend-mode: screen;
-  opacity: 0.6;
-  animation: sweep-rotate 68s linear infinite;
+  opacity: 0.7;
+  animation: sweep-rotate 40s linear infinite;
   transition: background 0.6s ease;
 }
 @keyframes sweep-rotate {
   to { transform: rotate(360deg); }
+}
+
+/* Second, slower, counter-rotating ring — same accent vocabulary, adds
+   depth without introducing a new color or motif. */
+#radar-sweep-2 {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: conic-gradient(
+    from 180deg,
+    transparent 0deg,
+    color-mix(in srgb, var(--accent) 12%, transparent) 3deg,
+    transparent 14deg,
+    transparent 360deg
+  );
+  mix-blend-mode: screen;
+  opacity: 0.3;
+  animation: sweep-rotate-reverse 95s linear infinite;
+  transition: background 0.6s ease;
+}
+@keyframes sweep-rotate-reverse {
+  to { transform: rotate(-360deg); }
 }
 
 .wordmark {
@@ -212,10 +235,9 @@ html, body {
   border: 1px solid var(--border);
   border-left: 3px solid var(--accent);
   border-radius: 0.75rem;
-  padding: 1rem;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
   transition: opacity 0.15s, border-color 0.15s, transform 0.15s, box-shadow 0.15s;
 }
 .card:hover {
@@ -224,6 +246,57 @@ html, body {
   border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
 }
 .card.is-read { opacity: 0.5; }
+
+.card-body {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.card-image {
+  width: 100%;
+  height: 96px;
+  object-fit: cover;
+  display: block;
+  flex-shrink: 0;
+  background: var(--bg-surface);
+}
+
+/* Generated fallback for items with no source image — deliberately reuses
+   the page background's own vocabulary (accent gradient + the same
+   circuit-trace tile as #aurora::after, re-tiled smaller) plus a corner
+   "radar ping" echoing .pulse-dot, so "no image" reads as an on-brand
+   state rather than a broken/missing asset. */
+.card-image--fallback {
+  width: 100%;
+  height: 96px;
+  flex-shrink: 0;
+  position: relative;
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cpath d='M0 26H34V0M120 74H86V120M60 0V46H120M0 94H26V64H74V94H120' fill='none' stroke='rgba(255,255,255,0.09)' stroke-width='1'/%3E%3Ccircle cx='34' cy='26' r='1.5' fill='rgba(255,255,255,0.14)'/%3E%3Ccircle cx='86' cy='74' r='1.5' fill='rgba(255,255,255,0.14)'/%3E%3Ccircle cx='60' cy='46' r='1.5' fill='rgba(255,255,255,0.14)'/%3E%3Ccircle cx='26' cy='64' r='1.5' fill='rgba(255,255,255,0.14)'/%3E%3Ccircle cx='74' cy='94' r='1.5' fill='rgba(255,255,255,0.14)'/%3E%3C/svg%3E"),
+    linear-gradient(135deg, color-mix(in srgb, var(--accent) 20%, var(--bg-surface)), var(--bg-surface));
+  background-size: 48px 48px, cover;
+}
+.card-image--fallback::after {
+  content: "";
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--accent);
+  animation: card-ping 2.6s ease-out infinite;
+  animation-delay: var(--ping-delay, 0s);
+}
+@keyframes card-ping {
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, currentColor 55%, transparent); }
+  70% { box-shadow: 0 0 0 8px color-mix(in srgb, currentColor 0%, transparent); }
+  100% { box-shadow: 0 0 0 0 color-mix(in srgb, currentColor 0%, transparent); }
+}
 
 .card-title {
   font-family: var(--font-display);
@@ -292,5 +365,7 @@ html, body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .pulse-dot, #refresh-icon.spinning, .card, #radar-sweep { animation: none !important; transition: none !important; }
+  .pulse-dot, #refresh-icon.spinning, .card, #radar-sweep, #radar-sweep-2, .card-image--fallback::after {
+    animation: none !important; transition: none !important;
+  }
 }
