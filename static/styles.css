@@ -43,13 +43,55 @@ html, body {
     radial-gradient(ellipse 900px 640px at 102% 104%, color-mix(in srgb, var(--hue-repos) 18%, transparent), transparent 60%),
     var(--bg-base);
 }
+/* Whisper-thin CRT scanline texture — reinforces the "monitoring console"
+   read established by the pulse-dot and live per-tab signal colors. */
+#aurora::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.4;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.05) 0px,
+    rgba(255, 255, 255, 0.05) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+}
+
+/* Fine PCB circuit-trace tile — right-angle traces + via dots, in place of
+   a plain dot grid, for a subtle "cyber console" texture under the cards. */
 #aurora::after {
   content: "";
   position: absolute;
   inset: 0;
-  opacity: 0.5;
-  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.055) 1px, transparent 1px);
-  background-size: 24px 24px;
+  opacity: 0.6;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cpath d='M0 26H34V0M120 74H86V120M60 0V46H120M0 94H26V64H74V94H120' fill='none' stroke='rgba(255,255,255,0.05)' stroke-width='1'/%3E%3Ccircle cx='34' cy='26' r='1.5' fill='rgba(255,255,255,0.09)'/%3E%3Ccircle cx='86' cy='74' r='1.5' fill='rgba(255,255,255,0.09)'/%3E%3Ccircle cx='60' cy='46' r='1.5' fill='rgba(255,255,255,0.09)'/%3E%3Ccircle cx='26' cy='64' r='1.5' fill='rgba(255,255,255,0.09)'/%3E%3Ccircle cx='74' cy='94' r='1.5' fill='rgba(255,255,255,0.09)'/%3E%3C/svg%3E");
+  background-size: 120px 120px;
+}
+
+/* Slow radar-style sweep, tinted with the active tab's live accent —
+   the signature move: this is a monitoring console, so the ambient motion
+   reads as "scanning for signal" rather than decorative glow. */
+#radar-sweep {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    color-mix(in srgb, var(--accent) 16%, transparent) 6deg,
+    transparent 22deg,
+    transparent 360deg
+  );
+  mix-blend-mode: screen;
+  opacity: 0.6;
+  animation: sweep-rotate 68s linear infinite;
+  transition: background 0.6s ease;
+}
+@keyframes sweep-rotate {
+  to { transform: rotate(360deg); }
 }
 
 .wordmark {
@@ -231,6 +273,24 @@ html, body {
   border: 1px solid color-mix(in srgb, var(--hue-usecases) 35%, transparent);
 }
 
+.site-footer {
+  border-top: 1px solid var(--border-soft);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: rgb(113 113 122);
+}
+.site-footer a {
+  color: rgb(161 161 170);
+  text-decoration: underline;
+  text-decoration-color: var(--border);
+  text-underline-offset: 2px;
+  transition: color 0.15s, text-decoration-color 0.15s;
+}
+.site-footer a:hover {
+  color: var(--accent);
+  text-decoration-color: var(--accent);
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .pulse-dot, #refresh-icon.spinning, .card { animation: none !important; transition: none !important; }
+  .pulse-dot, #refresh-icon.spinning, .card, #radar-sweep { animation: none !important; transition: none !important; }
 }
