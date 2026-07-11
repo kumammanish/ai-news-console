@@ -8,11 +8,11 @@ import yaml
 from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-DATA_DIR = BASE_DIR / "data"
+load_dotenv(BASE_DIR / ".env")
+
+DATA_DIR = Path(os.environ.get("DATA_DIR", str(BASE_DIR / "data")))
 DB_PATH = DATA_DIR / "news.db"
 SOURCES_PATH = BASE_DIR / "sources.yaml"
-
-load_dotenv(BASE_DIR / ".env")
 
 
 def _bool_env(name: str, default: bool) -> bool:

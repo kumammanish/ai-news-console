@@ -1,3 +1,13 @@
+---
+title: AI News Console
+emoji: 📰
+colorFrom: indigo
+colorTo: blue
+sdk: docker
+app_port: 7860
+pinned: false
+---
+
 # AI News Console
 
 A locally-hosted dashboard for scanning the latest AI news, Microsoft/Azure
@@ -45,11 +55,58 @@ Copy `.env.example` to `.env` and fill in what you want:
 | `REFRESH_TTL_MINUTES` | `60` | Per-source cache TTL — a source won't be re-fetched sooner than this unless you force-refresh. |
 | `GITHUB_TOKEN` | *(none)* | Optional. Raises GitHub API rate limits from 60/hr to 5000/hr. No scopes needed (public data only). |
 | `GEMINI_API_KEY` | *(none)* | Optional. Primary AI-gist provider — a Google AI Studio API key (not the consumer Gemini Pro/Advanced subscription, which doesn't grant programmatic access on its own). |
-| `GEMINI_MODEL` | `gemini-2.5-flash` | Gemini model used for gists. |
+| `GEMINI_MODEL` | `gemini-flash-latest` | Gemini model used for gists. |
 | `ANTHROPIC_API_KEY` | *(none)* | Optional. Fallback AI-gist provider (`claude-haiku-4-5-20251001`) — used only if Gemini is unset or its call fails. |
 | `AI_GISTS_ENABLED` | `false` | Toggle for AI gists. Falls back to a cleaned-up feed summary whenever this is off, both keys are missing, or both API calls fail. |
 | `TRENDING_WINDOW_DAYS` | `7` | How far back "trending" GitHub search looks. |
 | `MAX_ITEMS_PER_SOURCE` | `20` | Cap on items kept per individual source. |
+| `DATA_DIR` | `<repo>/data` | Where `news.db` and `app.log` live. Only worth setting if hosting on a platform with a separate persistent-storage mount (e.g. `/data` on a Hugging Face Space) — see below. |
+
+## Hosting on Hugging Face Spaces
+
+The app also runs as a Docker Space, using the `Dockerfile` at the repo
+root — same FastAPI app, no code differences from the local version.
+
+**Local verification before pushing anywhere:**
+
+```bash
+docker build -t ai-news-console .
+docker run -p 7860:7860 --env-file .env ai-news-console
+```
+
+Then visit `http://localhost:7860`. `--env-file .env` is a local-only
+convenience for testing with your real keys — nothing from `.env` is ever
+baked into the image itself (the `Dockerfile` only `COPY`s `app/`,
+`static/`, `sources.yaml`, and `requirements.txt`).
+
+**Deploying to a Space:**
+
+1. `huggingface-cli login` (needs a write-scoped token from
+   [huggingface.co/settings/tokens](https://huggingface.co/settings/tokens)).
+2. Create the Space: `huggingface-cli repo create ai-news-console --type space --space_sdk docker`
+   (add `--private` if you don't want it public).
+3. `git remote add space https://huggingface.co/spaces/<your-hf-username>/ai-news-console`
+4. `git push space main`
+5. In the Space's **Settings → Variables and secrets**, add whichever of
+   `GEMINI_API_KEY`, `ANTHROPIC_API_KEY`, `GITHUB_TOKEN`, `AI_GISTS_ENABLED`
+   you want — same names as `.env`. Never commit these; the Space reads them
+   as environment variables at runtime, the same way `python-dotenv` does
+   locally.
+
+**Two things that differ from running locally:**
+
+- **The container's filesystem is ephemeral** unless you add HF's paid
+  Persistent Storage add-on (mounted at `/data` — set `DATA_DIR=/data` in
+  the Space's secrets if you add it). Without it, `news.db` resets on every
+  restart and every sleep→wake cycle on the free CPU tier, so read-state
+  and "first seen" history don't survive, and each wake re-runs a full seed
+  fetch across every enabled source.
+- **If the Space is public,** anyone with the URL can click the in-app
+  Refresh button — `POST /api/refresh` has no auth or rate-limiting today.
+  Combined with an ephemeral filesystem and AI gists enabled, that means
+  visitors are drawing from the same `GEMINI_API_KEY`/`GITHUB_TOKEN` quotas
+  as you. Worth keeping in mind especially given Gemini's free tier caps
+  around 20 gists/day per key (see `doc/workflow.md` §10).
 
 ## Adding or removing sources
 

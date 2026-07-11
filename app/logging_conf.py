@@ -1,9 +1,9 @@
 import logging
 import sys
-from pathlib import Path
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-LOG_FILE = BASE_DIR / "data" / "app.log"
+from app.config import DATA_DIR
+
+LOG_FILE = DATA_DIR / "app.log"
 
 
 def setup_logging() -> None:

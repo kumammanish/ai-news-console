@@ -1,0 +1,13 @@
+.venv/
+.git/
+data/
+.env
+.env.example
+macos/
+__pycache__/
+*.pyc
+doc/
+ai-news-console-prompt.md
+README.md
+.claude/
+run.sh
