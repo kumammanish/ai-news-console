@@ -1,0 +1,234 @@
+# Add or remove sources here without touching any code.
+#
+# feeds: plain RSS/Atom feeds, each fetched independently. `category` must be
+#   one of: ai_news, microsoft. Set `enabled: false` to disable one without
+#   deleting it. Set `use_case: true` on a feed whose entire content is
+#   case-study-style content (customer stories, "how we built/adopted X") —
+#   every item from it is tagged into the Use Cases tab in addition to its
+#   normal category tab.
+#
+# github_topics: powers the "Trending AI Repos" tab via the GitHub Search API
+#   (no auth required, but set GITHUB_TOKEN in .env to raise rate limits).
+#
+# hackernews: front-page items filtered by keyword (via HN's Algolia API).
+#
+# aks_releases: GitHub Releases feed for a specific repo (default: Azure/AKS).
+#
+# use_cases: keywords scanned across every feed's title+summary (any
+#   category) to also surface case-study-flavored items in the Use Cases
+#   tab, on top of the dedicated feeds marked use_case: true above.
+
+feeds:
+  # --- AI news / tech blogs ---
+  - name: Anthropic News (unofficial mirror)
+    category: ai_news
+    url: https://raw.githubusercontent.com/taobojlen/anthropic-rss-feed/main/anthropic_news_rss.xml
+    enabled: true
+    # Anthropic does not publish an official RSS feed. This is a
+    # community-maintained mirror of anthropic.com/news. If it goes stale or
+    # disappears, swap in another mirror or point this at anthropic.com/news
+    # once/if an official feed ships.
+
+  - name: OpenAI Blog
+    category: ai_news
+    url: https://openai.com/news/rss.xml
+    enabled: true
+
+  - name: Google AI Blog
+    category: ai_news
+    url: https://blog.google/technology/ai/rss/
+    enabled: true
+
+  - name: Hugging Face Blog
+    category: ai_news
+    url: https://huggingface.co/blog/feed.xml
+    enabled: true
+
+  - name: Ars Technica AI
+    category: ai_news
+    url: https://arstechnica.com/ai/feed/
+    enabled: true
+
+  - name: VentureBeat AI
+    category: ai_news
+    url: https://venturebeat.com/category/ai/feed/
+    enabled: true
+
+  - name: TechCrunch AI
+    category: ai_news
+    url: https://techcrunch.com/category/artificial-intelligence/feed/
+    enabled: true
+
+  - name: The Verge AI
+    category: ai_news
+    url: https://www.theverge.com/rss/ai-artificial-intelligence/index.xml
+    enabled: true
+
+  # --- Microsoft: Azure AI & Infrastructure (primary focus) ---
+  - name: Azure Updates
+    category: microsoft
+    url: https://www.microsoft.com/releasecommunications/api/v2/azure/rss
+    enabled: true
+    # The spec's original azure.microsoft.com/.../updates/feed/ URL now 200s
+    # with an HTML page instead of RSS (broken since mid-2024, per community
+    # reports). This is the current working replacement.
+
+  - name: Azure Blog
+    category: microsoft
+    url: https://azure.microsoft.com/en-us/blog/feed/
+    enabled: true
+    # Broadest single Azure source — covers both AI platform and core
+    # infrastructure (compute/networking/storage) announcements.
+
+  - name: Azure AI Blog
+    category: microsoft
+    url: https://azure.microsoft.com/en-us/blog/category/ai-machine-learning/feed/
+    enabled: true
+    # Verified 2026-07-11 via the site's own wp-json category taxonomy — the
+    # old /topics/<slug>/feed/ URL pattern 404s site-wide now; Azure Blog
+    # moved to /category/<slug>/feed/.
+
+  - name: Azure Infrastructure Blog
+    category: microsoft
+    url: "https://azure.microsoft.com/en-us/blog/feed/?cat=1467,1466,1482,1457,1491"
+    enabled: true
+    # Verified 2026-07-11. Azure Blog has no single "infrastructure"
+    # category anymore (confirmed via wp-json/wp/v2/categories) — this
+    # combines the closest ones: Compute(1467), Hybrid+multicloud(1466),
+    # Management and governance(1482), Networking(1457), Storage(1491).
+
+  - name: Azure DevOps Blog
+    category: microsoft
+    url: https://devblogs.microsoft.com/devops/feed/
+    enabled: true
+
+  - name: Microsoft Tech Community (Azure)
+    category: microsoft
+    url: https://techcommunity.microsoft.com/t5/s/gxcuf89792/rss/board?board.id=Azure
+    enabled: true
+    # Verified 2026-07-11 — Tech Community moved off the old /gxcuf89792/rss/
+    # prefix to /t5/s/gxcuf89792/rss/ during a platform migration; board id
+    # itself (Azure) is unchanged.
+
+  # --- Microsoft: broader enterprise product blogs ---
+  - name: Microsoft 365 / Copilot Blog
+    category: microsoft
+    url: https://www.microsoft.com/en-us/microsoft-365/blog/feed/
+    enabled: true
+
+  - name: Microsoft Copilot Blog
+    category: microsoft
+    url: https://www.microsoft.com/en-us/microsoft-copilot/blog/feed/
+    enabled: true
+    # Best-effort URL, not independently verified.
+
+  - name: Power Platform Blog
+    category: microsoft
+    url: https://www.microsoft.com/en-us/power-platform/blog/feed/
+    enabled: true
+    # Best-effort URL, not independently verified.
+
+  - name: Microsoft Security Blog
+    category: microsoft
+    url: https://www.microsoft.com/en-us/security/blog/feed/
+    enabled: true
+    # Best-effort URL, not independently verified.
+
+  - name: GitHub Blog
+    category: microsoft
+    url: https://github.blog/feed/
+    enabled: true
+
+  - name: .NET Blog
+    category: microsoft
+    url: https://devblogs.microsoft.com/dotnet/feed/
+    enabled: true
+
+  - name: Visual Studio Blog
+    category: microsoft
+    url: https://devblogs.microsoft.com/visualstudio/feed/
+    enabled: true
+
+  # --- Dedicated use-case / customer-story feeds ---
+  # Every item from these is tagged into the Use Cases tab (use_case: true),
+  # regardless of keyword matching below.
+  - name: Azure Customer Stories
+    category: microsoft
+    url: https://azure.microsoft.com/en-us/blog/topics/customer-stories/feed/
+    enabled: false
+    use_case: true
+    # Disabled 2026-07-11 — checked azure.microsoft.com/en-us/blog's own
+    # wp-json category/tag taxonomy directly: there is no customer-stories
+    # category or tag on the Azure Blog (closest is the unrelated
+    # "customer-enablement" tag). No RSS exists for this content anymore;
+    # re-enable only if you find a real feed URL.
+
+  - name: Microsoft Customer Stories
+    category: microsoft
+    url: https://www.microsoft.com/en-us/customers/rss
+    enabled: false
+    use_case: true
+    # Disabled 2026-07-11 — the Microsoft Customer Stories site was rebuilt
+    # on Adobe Edge Delivery (JS-driven search, no RSS). Confirmed by
+    # fetching /customers/search?rss=1 directly: it 200s but returns the
+    # HTML search page, not a feed. customers.microsoft.com/en-us/rss also
+    # redirects into the same dead end. No working replacement found.
+
+hackernews:
+  enabled: true
+  keywords:
+    - ai
+    - llm
+    - gpt
+    - claude
+    - anthropic
+    - openai
+    - gemini
+    - agent
+    - agentic
+    - rag
+    - "machine learning"
+    - transformer
+    - "neural network"
+
+github_topics:
+  enabled: true
+  topics:
+    - ai
+    - llm
+    - agents
+    - mcp
+    - claude
+    - rag
+    - azure
+  min_stars: 10
+
+aks_releases:
+  enabled: true
+  repo: Azure/AKS
+
+use_cases:
+  keywords:
+    - "case study"
+    - "customer story"
+    - "customer stories"
+    - "success story"
+    - "customer spotlight"
+    - "how we built"
+    - "how we use"
+    - "how microsoft"
+    - "in production"
+    - "real-world"
+    - "real world"
+    - "lessons learned"
+    - "migrated to"
+    - "rolled out"
+    - "rollout"
+    - "adopts"
+    - "adopted"
+    - "deployed"
+    - "uses azure"
+    - "uses copilot"
+    - "uses github copilot"
+    - "built with azure"
+    - "powered by azure"
