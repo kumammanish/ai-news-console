@@ -145,3 +145,5 @@ data/           news.db + app.log (gitignored, created at runtime)
 - **Re-running `run.sh` after pulling changes:** it always re-installs
   `requirements.txt` into the existing `.venv`, so new dependencies are
   picked up automatically.
+
+A
