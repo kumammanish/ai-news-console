@@ -23,19 +23,6 @@ up to ~60 seconds depending on how many feeds respond quickly).
 
 Stop the server with `Ctrl+C` in the terminal it's running in.
 
-## One-click Desktop launcher
-
-```bash
-./macos/install_launcher.sh
-```
-
-Creates **`AI News.app`** on your Desktop with a generated icon. Double-click
-it any morning: it health-checks `localhost:8000`, starts the server in the
-background only if it isn't already running (never spawns a duplicate), waits
-until it's ready, then opens your browser. Re-run this script any time the
-repo is moved — the app bundle bakes in an absolute path to `run.sh` at
-install time.
-
 ## Configuration
 
 Copy `.env.example` to `.env` and fill in what you want:
