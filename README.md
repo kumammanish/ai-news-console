@@ -52,18 +52,6 @@ Copy `.env.example` to `.env` and fill in what you want:
 | `MAX_ITEMS_PER_SOURCE` | `20` | Cap on items kept per individual source. |
 | `DATA_DIR` | `<repo>/data` | Where `news.db` and `app.log` live. Only worth setting if hosting on a platform with a separate persistent-storage mount — see below. |
 
-## Hosting on Render
-
-The app runs as a Docker web service, using the `Dockerfile` at the repo
-root — same FastAPI app, no code differences from the local version. It
-binds to `$PORT` if set (Render injects this automatically) and falls back
-to `7860` otherwise, so no platform-specific config is needed.
-
-(An earlier version of this doc targeted Hugging Face Spaces, but HF now
-requires a PRO subscription — $9/month — to run Docker Spaces even on their
-free CPU tier. Render's free tier needs no subscription and no credit card,
-so that's what's actually deployed.)
-
 **Local verification before deploying:**
 
 ```bash
